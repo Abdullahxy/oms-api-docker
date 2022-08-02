@@ -1,6 +1,5 @@
 FROM ruby:2.7.1-alpine
 
-# RUN apt-get update -qq && apt-get install -y nodejs
 RUN apk add --update \
     postgresql-dev \
     tzdata \
