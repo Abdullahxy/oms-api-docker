@@ -27,7 +27,6 @@ jobs:
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
-          rake
         
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
