@@ -5,34 +5,68 @@
 # This workflow will install a prebuilt Ruby version, install dependencies, and
 # run tests and linters.
 name: "Ruby on Rails CI"
+
 on:
+
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 jobs:
+
   test:
     runs-on: ubuntu-latest
-      
+    container: ruby:2.7.1-alpine
+    services:
+      db:
+        image: postgres
+        ports: ['5432:5432']
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
-      - name: Install Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '2.7.1'
+        
+      - name: Install packages
+        run: apk add --update postgresql-dev tzdata nodejs
+        
+      - name: Install packages
+        run: apk add --update build-base
           
-      - name: Build and run tests
+      - name: Build app
         run: |
           gem install bundler
           bundle install --jobs 4 --retry 3
-        
-      - uses: mr-smithers-excellent/docker-build-push@v5
-        name: Build & push Docker image
-        with:
-          image: abdullahxy/ci-cd
-          tags: v1, latest
-          registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          
+          
+      - name: Connect to PostgreSQL
+        # Runs a script that creates a PostgreSQL table, populates
+        # the table with data, and then retrieves the data.
+        run: |
+          rake db:create
+          rake db:migrate
+          bundle exec rake
+        # Environment variables used by the `client.js` script to create a new PostgreSQL table.
+        env:
+          # The hostname used to communicate with the PostgreSQL service container
+          POSTGRES_HOST: db
+          # The default PostgreSQL port
+          POSTGRES_PORT: 5432
+          
+          
+#       - uses: mr-smithers-excellent/docker-build-push@v5
+#         name: Build & push Docker image
+#         with:
+#           image: abdullahxy/ci-cd
+#           tags: v1, latest
+#           registry: docker.io
+#           username: ${{ secrets.DOCKER_USERNAME }}
+#           password: ${{ secrets.DOCKER_PASSWORD }}
