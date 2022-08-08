@@ -1,5 +1,5 @@
 class CreateProducts < ActiveRecord::Migration[6.0]
-  def up
+  def change
     create_table :products do |t|
       t.bigint :upc, null: false
       t.string :title, null: false
@@ -16,11 +16,5 @@ class CreateProducts < ActiveRecord::Migration[6.0]
 
     add_index :products, :title
     add_index :products, :upc, unique: true
-  end
-
-  def down
-    drop_table :products
-
-    execute 'DROP SEQUENCE products_upc_sequence'
   end
 end
