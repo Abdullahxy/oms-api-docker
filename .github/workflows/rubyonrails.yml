@@ -18,13 +18,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container: ruby:2.7.1-alpine
+    env:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     services:
       db:
         image: postgres
         ports: ['5432:5432']
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -48,21 +51,10 @@ jobs:
           
           
       - name: Connect to PostgreSQL
-        # Runs a script that creates a PostgreSQL table, populates
-        # the table with data, and then retrieves the data.
         run: |
           rake db:create
           rake db:migrate
           bundle exec rake
-        # Environment variables used by the `client.js` script to create a new PostgreSQL table.
-        env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: db
-          # The default PostgreSQL port
-          POSTGRES_PORT: 5432
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
           
           
 #       - uses: mr-smithers-excellent/docker-build-push@v5
