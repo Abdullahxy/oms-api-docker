@@ -56,14 +56,14 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
         run: |
-          RAILS_ENV=test rake db:drop db:create db:schema:load
-          bundle exec rake
+          RAILS_ENV=test rake db:drop db:create db:schema:load  
+        # bundle exec rake
           
           
       - name: Build & push Docker image
         uses: mr-smithers-excellent/docker-build-push@v5
         with:
-          image: abdullahxy/ci-cd
+          image: abdullahxy/rails-oms-api
           tags: latest
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
