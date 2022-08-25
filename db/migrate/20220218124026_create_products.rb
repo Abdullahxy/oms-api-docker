@@ -1,5 +1,5 @@
 class CreateProducts < ActiveRecord::Migration[6.0]
-  def up
+  def change
     create_table :products do |t|
       t.bigint :upc, null: false
       t.string :title, null: false
@@ -11,16 +11,9 @@ class CreateProducts < ActiveRecord::Migration[6.0]
       t.timestamps
     end
 
-    execute 'CREATE SEQUENCE products_upc_sequence START 1000'
-    execute "ALTER TABLE products ALTER COLUMN upc SET DEFAULT NEXTVAL('products_upc_sequence')"
+    execute 'SELECT setval('products_id_seq', 1000)'
 
     add_index :products, :title
     add_index :products, :upc, unique: true
-  end
-
-  def down
-    drop_table :products
-
-    execute 'DROP SEQUENCE products_upc_sequence'
   end
 end

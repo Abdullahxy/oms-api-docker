@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2022_02_18_141934) do
   end
 
   create_table "products", force: :cascade do |t|
-    t.bigint "upc", default: -> { "nextval('products_upc_sequence'::regclass)" }, null: false
+    t.bigint "upc", null: false
     t.string "title", null: false
     t.text "description", null: false
     t.decimal "price", precision: 8, scale: 2, null: false
